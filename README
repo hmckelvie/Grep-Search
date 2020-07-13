@@ -1,0 +1,145 @@
+README
+Hailey McKelvie
+Comp 15, project 2
+Decemeber 2019
+
+	The program performs Grep Search through building a Hash
+	Table. Collisions in the hash table are handled with 
+	chaining. Additionally, the Gerp Search enables case 
+	sensitive and case insensitive searching. 
+
+The purpose of the program is to be able to find each word that is
+stored in the certain directory given. To find each word, the line
+number, the file and the line must be returned in an output file.
+effectivly, you are searching for a word in the program and it will
+return the outputs in the specified format. Theree is case sensitive
+and insensitive search to find the word. the case sensitive finds
+all instences of that specific word. For the insenseitve search, it
+finds all instences of that word regarless of what is capitalized. 
+
+
+	List.h -
+		The interface for the List class. Contains a list of each
+		instance of a case insensitive word and its respective
+		location.
+	List.cpp -
+		Implimentation of the List interface. Enables case sensitive
+		and case insensitive search and also inserting words, for
+		building the hash table. Each List is a case insensitive
+		word. Then, searching within the list will yield case
+		sensitive search results.
+	LinkedList.h -
+		The interface provides the chaining for the hash table. 
+		Creates a linked list of "List" nodes. 
+	LinkedList.cpp -
+		The implementation of the LinkedList interface. Allows for
+		case sensitive searching, case insensitive searching, and
+		insertion of words within the chaining.
+	hashTable.h - 
+		The hashtable interface. Contains a vector of the LinkedList
+		chains. 
+	hashTable.cpp -
+		The implementation of the hash table. Contains case sensitive
+		searching, case insensitive searching, and insertion of words.
+		Uses the C++ hashing index for searching within individual
+		LinkedLists and for inserting words in LinkedLists. 	
+	FSTreeTraversal.cpp -
+		the main driver file for the program. Initializes the hash
+		table and allows for searching. 		
+	DirNode.h -
+		used to build the tree of files for initializing the hash
+		table. 
+	FSTree.h - 
+		used to search the tree of files for inserting words within
+		the hash table. 
+	Makefile - used to compile and run the grep
+
+	compile and linked using the Makefile.run with ./gerp [directory] [outfile]
+
+OVERVIEW
+	The driver program of the function, FSTreeTraversal.cpp, traverses the 
+directory for the files using the DirNode and FSTree classes provided.
+Once it files the files it inserts them into a hashTable object. The hash
+table inserts them through using the built in hashing function in c++ to
+find the index of the hash table at which to insert the word. The lower case
+version of the word is hashed. Then it inserts the word with the linked list
+class. Each index of the hashtable, which is a vector, contains a linked list
+ to handle collisions. Each node in the linked list represents all instances of
+ the lower case version of a word. The nodes contain the string of the
+ lowercase word and List object. The List object contains that specific word, 
+ its line number and integer that corresponds to its file path. 
+
+ Insertion to the hash table is done through checking so see if the node for
+ that lower case word already exists. If it does not exits, make a node for 
+ it. Whether the same word already exists in the line, that is checked during
+ printing the line to the output file.
+
+Searching for a word in the hash table is done through hashing the lower
+case version of the word that it is meant to find. Once it is hashed, the 
+index of the hash table that it would be stored at is known. Search through
+the linked list at that index of the hashtable for the word. If the word is
+not stored in a node, stop and return false, which will print the not found
+statement. If there is a designated node for the word, traverse through that
+List. For insensitive, print each instance of that word in the correct format,
+get the line from the opening the file from PathTable. For sensitive, search
+for the specific syntax of the word to find. When found, print in the correct
+format using the file path. If the correct syntax is not found, return false
+and print the not found comment. 
+
+DATASTRUCTURE
+	When a file is found in traversing the FSTree, store each file in a vector
+in PathTable. This makes it so string that is the file path is not stored
+multiple times. Each word would then correspond to the index at which its
+path is sotred in the vector. The PathTable can be used to print the line on
+which the word occurs and print its path. The driver function passes a pointer
+to the pathtable through to the find functions. When printing the line,
+it checks to see if that word is repeated in the line and only prints once.
+
+	The List class stores the instances at which the word exists, including
+the line number, the int that corresponds to the file, all in a struct. 
+The List class will find whether the word occurs and insert in a node. There is
+a vector of the cases of the word. each of the cases (string) is stored in the
+vector so then the struct for each instance stored the int index that
+corresponds to the case for that word. Additionally, there is a vector
+of the instance structs, for storage and searching.
+
+	The linkedList class stores nodes which contain an instance of a List,
+a pointer to the next node, and the lowercase version of that word. The
+linkedList inserts a word, either by creating a new node or by putting it
+in an already existing node. The linked List searches for a word through
+traversing the linkedList and calling List when the lowercase Node is found.
+Additionally, the linkedList contains the big three. 
+
+	The hashtable class contains a vector of linkedLists which represents the 
+table. The hashTable inserts a word through using the c++ hashing function mod
+the size of the table. At that index in the vector, the table inserts to the 
+linked list existing there. The hashtable is initialized with each index of 
+the vector containing an empty linked list. When inserting, the loadFactor is
+checked. If the number of the elements divided by the size of the hash table
+is greater than the load factor, which in this case 0.75. If the table exceeds
+the load factor, the table will expand by a factor of 2. Expansion is done
+through copying the origional hash table over into a vector of the same size
+called toExpand. Then, the origional table is cleared and initialized ot 2
+times the size. Everything from toExpand is rehashed into the new table and
+toExpand is cleared. The hashtable searches through hashing the lowercase
+version of the word to find where it would be stored, then it calls the find
+for that linked list.
+
+FSTreeTraversal contains an instance of a hashtable, which is made through
+ traversing FSTree. It opens files, stores the files in the PathTable and 
+then traverses each line and calls insert for every word in the file. After
+building the hashTable, query commands are taken. It looks through the
+commands and searches, printing to the output file for each time it is found. 
+
+I believe that the implimentation I used optimized the ease of both building
+the hash table and searching for words. Inserting without checking if it
+already exists in that line optimizes the time it takes to build the hash
+table. Checking whether there are repeats in the line increases the speed
+of the program. Overall, Searchimg is realativly fast and 
+building the hashtable is realativly fast. The vector containing the path of
+each file reduced the amount of storage because each path was only stored once,
+while it could have been stored the number of words in that file. Creating
+each node in the linked list for the lowercase word increased ease of both
+case insensitive and sensitive searches. Thus, my implimentation satisfies the
+guidelines and uses an appropriate amount of memory. 
+
